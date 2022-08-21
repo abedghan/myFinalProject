@@ -20,12 +20,74 @@ const SideNavigation = () => {
 
     return (
         <>
-            <DehazeIcon className="drawer_btn" onMouseEnter = {()=>setState(true)} />
+            <DehazeIcon className="drawer_btn" onClick={() => setState(true)} />
 
-            <Drawer anchor ={"right"} open={state} onMouseLeave ={()=> setState(false)} >
-            <Box sx ={{width:200}}>
+            <Drawer anchor={"right"} open={state} onClose={() => setState(false)} >
+                <Box sx={{ width: 200 }}>
+                    <List>
+                        <ListItem
+                            button
+                            component={RouterLink}
+                            to='/'
+                            onClick={() => setState(false)}
+                        >
+                            <ListItemIcon>
+                                <HomeIcon />
+                            </ListItemIcon>
+                            <ListItemText primary='Home' />
+                        </ListItem>
+                        <ListItem
+                            button
+                            component={RouterLink}
+                            to='/contact'
+                            onClick={() => setState(false)}
+                        >
+                            <ListItemIcon>
+                                <MailIcon />
+                            </ListItemIcon>
+                            <ListItemText primary='Contact' />
+                        </ListItem>
+                        <ListItem
+                            button
+                            component={RouterLink}
+                            to='/auth'
+                            onClick={() => setState(false)}
+                        >
+                            <ListItemIcon>
+                                <VpnKeyIcon />
+                            </ListItemIcon>
+                            <ListItemText primary='Sing in' />
+                        </ListItem>
+                        <ListItem
+                            button
+                            onClick={() => {
+                                alert('sign out')
+                                setState(false)
+                            }}
+                        >
+                            <ListItemIcon>
+                                <VpnKeyIcon />
+                            </ListItemIcon>
+                            <ListItemText primary='Sing out' />
+                        </ListItem>
+                        <>
+                            <Divider/>
+                                <ListItem
+                               button
+                               component={RouterLink}
+                               to='/dashboard'
+                               onClick={() => setState(false)}
+                                >
+                                    <ListItemIcon>
+                                        <DashboardIcon />
+                                    </ListItemIcon>
+                                    <ListItemText primary='Dashboard' />
+                                </ListItem>
+                            
+                        </>
+                    </List>
 
-            </Box>
+                </Box>
             </Drawer>
         </>
 
