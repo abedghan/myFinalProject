@@ -38,7 +38,7 @@ const signInWithEmailAndPassword = async (email, password) => {
            
         }
         if (!(await user.comparePassword(password))) {
-            throw new ApiError(httpStatus.BAD_REQUEST,'Sorry, wrong password');
+            throw new ApiError(httpStatus.BAD_REQUEST,'Sorry, wrong password ');
             
         }
         return user;
