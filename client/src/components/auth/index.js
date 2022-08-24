@@ -7,7 +7,8 @@ import { useDispatch, useSelector } from 'react-redux'
 import Box from '@mui/material/Box'
 import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
-import {registerUser,signInUser} from '../../store/actions/users'
+import {registerUser,signInUser} from '../../store/actions/users';
+import PreventSignIn   from '../../hoc/prevent_signin'
 
 const Auth = () => {
     //comp
@@ -44,7 +45,7 @@ const Auth = () => {
     }
  },[notifications])
     return (
-
+        <PreventSignIn users= {users} >
         <div className='auth_container'>
             <h1>Authenticate</h1>
             {users.loading ?
@@ -95,6 +96,7 @@ const Auth = () => {
             </Box>
             }
         </div>
+        </PreventSignIn>
     )
 
 
