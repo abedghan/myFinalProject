@@ -6,7 +6,9 @@ import { useNavigate } from "react-router-dom";
 import { AdminTitle } from "../../../../utilis/tools";
 import { errorHelper, Loader } from '../../../../utilis/tools';
 import { validation, formValues } from './validationSchema'
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux';
+import { addArticle } from "../../../../store/actions/articles";
+import WySIWYG from "../../../../utilis/forms/wysiwyg";
 //Mui 
 import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
@@ -22,42 +24,66 @@ import FormHelperText from '@mui/material/FormHelperText'
 
 import InputLabel from '@mui/material/InputLabel';
 import AddIcon from '@mui/icons-material/Add';
-import { visuallyHidden } from '@mui/utils';
+
 
 const AddArticle = () => {
+    const [editorBlur, setEditorBlur] = useState(false)
     //redux
     const articles = useSelector(state => state.articles)
     const dispatch = useDispatch()
     const actorsValue = useRef('');
+    let navigate = useNavigate();
 
     const formik = useFormik({
         enableReinitialize: true,
         initialValues: formValues,
         validationSchema: validation,
         onSubmit: (values) => {
-            console.log(values);
+            dispatch(addArticle(values))
+                .unwrap()
+                .then((
+
+                ) => {
+                    navigate('/dashboard/articles')
+                })
         }
     })
+    const handleEditorState = (state) => {
+        formik.setFieldValue('content', state, true)
 
-
+    }
+    const handleEditorBlur = (blur) => {
+        setEditorBlur(true)
+    }
 
 
     return (
         <>
             <AdminTitle title={'Add Article'} />
             <form className="mt-3 article_form" onSubmit={formik.handleSubmit}>
-                <div className="form-group">
+                <div className='form-group'>
                     <TextField
                         style={{ width: '100%' }}
-                        name='title'
-                        label='Enter a title '
+                        name="title"
+                        label="Enter a title"
                         variant="outlined"
                         {...formik.getFieldProps('title')}
                         {...errorHelper(formik, 'title')}
                     />
                 </div>
                 <div className="form-group">
-                    WySIWYG
+                    <WySIWYG
+                        setEditorState={(state) => handleEditorState(state)}
+                        setEditorBlur={(blur) => handleEditorBlur(blur)}
+                        onError={formik.errors.content}
+                        editorBlur={editorBlur}
+                    />
+                    {formik.errors.content || (formik.errors.content && editorBlur) ?
+                        <FormHelperText error={true}>
+                            {formik.errors.content}
+                        </FormHelperText>
+
+                        : null}
                 </div>
                 <div className="form-group">
                     <TextField
@@ -89,41 +115,41 @@ const AddArticle = () => {
                             name='actors'
                             render={arrayHelpers => (
                                 <div>
-                                    <Paper className ='actors_form'>
-                                    <InputBase
-                                    inputRef={actorsValue}
-                                    className="input"
-                                    placeholder=" Add actors"
-                                    />
-                                    <IconButton
-                                    onClick={() =>{
-                                        if(actorsValue.current.value !==''){
-                                            arrayHelpers.push(actorsValue.current.value);
-                                        }
-                                        actorsValue.current.value = '';
-                                    }}
-                                    >
-                                        <AddIcon/>
-                                    </IconButton>
+                                    <Paper className='actors_form'>
+                                        <InputBase
+                                            inputRef={actorsValue}
+                                            className="input"
+                                            placeholder=" Add actors"
+                                        />
+                                        <IconButton
+                                            onClick={() => {
+                                                if (actorsValue.current.value !== '') {
+                                                    arrayHelpers.push(actorsValue.current.value);
+                                                }
+                                                actorsValue.current.value = '';
+                                            }}
+                                        >
+                                            <AddIcon />
+                                        </IconButton>
                                     </Paper>
-                                    {formik.errors.actors  && formik.touched.actors ?
-                        <FormHelperText error='true'>
-                            {formik.errors.actors}
-                        </FormHelperText>
-                        : null}
+                                    {formik.errors.actors && formik.touched.actors ?
+                                        <FormHelperText error={true}>
+                                            {formik.errors.actors}
+                                        </FormHelperText>
+                                        : null}
                                     <div className="chip_container">
-                                        {formik.values.actors.map((actor,index)=>(
+                                        {formik.values.actors.map((actor, index) => (
                                             <div key={index}>
                                                 <Chip
-                                                label={`${actor}`}
-                                                color='primary'
-                                                onDelete={()=>arrayHelpers.remove(index)}
+                                                    label={`${actor}`}
+                                                    color='primary'
+                                                    onDelete={() => arrayHelpers.remove(index)}
                                                 />
                                             </div>
                                         ))}
                                     </div>
                                 </div>
-                           ) }
+                            )}
                         />
                     </FormikProvider>
                 </div>
@@ -153,21 +179,24 @@ const AddArticle = () => {
                         <MenuItem value='public'>Public</MenuItem>
 
                     </Select>
-                    {formik.errors.status && formik.touched.status?
-                        <FormHelperText error='true'>
+                    {formik.errors.status && formik.touched.status ?
+                        <FormHelperText error={true}>
                             {formik.errors.status}
                         </FormHelperText>
                         : null}
                 </FormControl>
-                <Divider className="mt-3 mb-3"/>
-
-                <Button
-                variant="contained"
-                color="primary"
-                type="submit"
-                >
-                    Add Article
-                </Button>
+                <Divider className="mt-3 mb-3" />
+                {articles.loading ?
+                        <Loader/>
+                    :
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        type="submit"
+                    >
+                        Add Article
+                    </Button>
+                }
             </form>
         </>
     )
